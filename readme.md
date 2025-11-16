@@ -80,4 +80,26 @@ _FATAL:  sorry, too many clients already._ <br>
 
 Более подробную информацию можно посмотреть в каталоге _tests/load_.
 
+<h3>2. Интеграционное тестирование</h3>
 
+Тесты были применены к use cases, которые обрабатывают бизнес-логику пользователей, команд и пулл-реквестов.<br>
+Все тесты (вместе с БД) запускаются в отдельных контейнерах (с отдельным docker-compose-test.yml)<br>
+
+_Все тесты проходят успешно:_ <br>
+```bash
+--- PASS: TestPullRequestUseCaseIntegration (0.68s)
+    --- PASS: TestPullRequestUseCaseIntegration/TestCreatePR_AuthorNotInTeam (0.17s)
+    --- PASS: TestPullRequestUseCaseIntegration/TestCreatePR_Success (0.15s)
+    --- PASS: TestPullRequestUseCaseIntegration/TestMergePR_Success (0.16s)
+    --- PASS: TestPullRequestUseCaseIntegration/TestReassignReviewer_Success (0.16s)
+
+--- PASS: TestTeamUseCaseIntegration (0.46s)
+    --- PASS: TestTeamUseCaseIntegration/TestCreateTeam_DuplicateName (0.12s)
+    --- PASS: TestTeamUseCaseIntegration/TestCreateTeam_Success (0.11s)
+    --- PASS: TestTeamUseCaseIntegration/TestGetTeam_NotFound (0.09s)
+    --- PASS: TestTeamUseCaseIntegration/TestGetTeam_Success (0.10s)
+
+--- PASS: TestUserUseCaseIntegration (0.30s)
+    --- PASS: TestUserUseCaseIntegration/TestSetUserActive_Success (0.15s)
+    --- PASS: TestUserUseCaseIntegration/TestSetUserActive_UserNotFound (0.13s)
+```
