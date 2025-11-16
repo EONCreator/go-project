@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
@@ -37,31 +35,6 @@ services:
         condition: service_healthy
     networks:
       - app-network
-
-  browser-opener:
-    image: alpine:3.18
-    container_name: browser-opener
-    command: >
-      sh -c "
-      echo 'Waiting for app to be ready...' &&
-      apk add --no-cache curl &&
-      until curl -f http://app:$${APP_PORT}/health 2>/dev/null; do
-        sleep 2
-      done &&
-      echo 'Application is ready!' &&
-      if command -v xdg-open >/dev/null 2>&1; then
-        xdg-open http://localhost:$${APP_PORT}
-      elif command -v open >/dev/null 2>&1; then
-        open http://localhost:$${APP_PORT}
-      else
-        echo 'Application is ready at: http://localhost:$${APP_PORT}'
-      fi
-      "
-    depends_on:
-      app:
-        condition: service_started
-    network_mode: host
-    profiles: ["browser"]
 
 volumes:
   postgres_data:

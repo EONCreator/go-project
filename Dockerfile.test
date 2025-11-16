@@ -1,0 +1,33 @@
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# 1. Собираем приложение (проверяем компиляцию)
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/api
+
+# 2. Собираем тестовый бинарник
+RUN CGO_ENABLED=0 GOOS=linux go test -c -tags=integration -o test.bin ./tests/integration
+
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates postgresql-client
+
+WORKDIR /app
+
+# Копируем собранное приложение и тесты
+COPY --from=builder /app/main .
+COPY --from=builder /app/test.bin .
+COPY --from=builder /app/internal/infrastructure/postgres_database/migrations ./migrations
+
+RUN adduser -D -g '' appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
+# Запускаем собранные тесты
+CMD ["./test.bin", "-test.v", "-test.timeout=5m"]

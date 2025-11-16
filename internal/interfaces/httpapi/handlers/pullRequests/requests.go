@@ -1,4 +1,4 @@
-package pullRequests
+package pullrequests
 
 // CreatePRRequest запрос на создание PR
 type CreatePRRequest struct {

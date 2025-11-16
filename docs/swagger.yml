@@ -1,0 +1,106 @@
+openapi: 3.0.0
+info:
+  title: GO-PROJECT API
+  version: 1.0
+  description: API для управления pull requests, командами и пользователями
+
+paths:
+  /pullRequest/create:
+    post:
+      summary: Создать PR и автоматически назначить до 2 ревьюверов из команды автора
+      description: Создает новый pull request и назначает ревьювера
+      tags: [PullRequests]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePRRequest'
+            example:
+              author_id: "u1"
+              pull_request_id: "pr-1001" 
+              pull_request_name: "Add search"
+      responses:
+        '201':
+          description: PR создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PullRequestResponse'
+              example:
+                pr:
+                  pull_request_id: "pr-1001"
+                  pull_request_name: "Add search"
+                  author_id: "u1"
+                  status: "OPEN"
+                  assigned_reviewers: ["u2", "u3"]
+        '404':
+          description: Автор/команда не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "NOT_FOUND"
+                  message: "team not found for author"
+        '409':
+          description: PR уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "PR_EXISTS"
+                  message: "pull request already exists"
+
+components:
+  schemas:
+    CreatePRRequest:
+      type: object
+      properties:
+        author_id:
+          type: string
+          example: "u1"
+        pull_request_id:
+          type: string
+          example: "pr-1001"
+        pull_request_name:
+          type: string
+          example: "Add search"
+    
+    PullRequestResponse:
+      type: object
+      properties:
+        pr:
+          type: object
+          properties:
+            pull_request_id:
+              type: string
+              example: "pr-1001"
+            pull_request_name:
+              type: string
+              example: "Add search"
+            author_id:
+              type: string
+              example: "u1"
+            status:
+              type: string
+              example: "OPEN"
+            assigned_reviewers:
+              type: array
+              items:
+                type: string
+              example: ["u2", "u3"]
+    
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string

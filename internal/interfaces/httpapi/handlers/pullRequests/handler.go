@@ -1,4 +1,4 @@
-package pullRequests
+package pullrequests
 
 import (
 	"encoding/json"

@@ -25,4 +25,13 @@ CREATE TABLE IF NOT EXISTS pull_request_reviewers (
     PRIMARY KEY (pull_request_id, user_id)
 );
 
-ALTER TABLE pull_requests ADD CONSTRAINT unique_pr_id UNIQUE (id);
+-- Условное добавление constraint (если еще не существует)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint 
+        WHERE conname = 'unique_pr_id'
+    ) THEN
+        ALTER TABLE pull_requests ADD CONSTRAINT unique_pr_id UNIQUE (id);
+    END IF;
+END $$;

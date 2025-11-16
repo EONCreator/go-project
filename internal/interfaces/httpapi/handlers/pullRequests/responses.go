@@ -1,4 +1,4 @@
-package pullRequests
+package pullrequests
 
 import (
 	"go-project/internal/domain/entities"

@@ -11,7 +11,10 @@ type Config struct {
 	DBPassword string
 	DBName     string
 	DBSSLMode  string
-	AppPort    string
+
+	AppPort string
+
+	IsTest bool
 }
 
 func Load() *Config {
@@ -23,6 +26,7 @@ func Load() *Config {
 		DBName:     getEnv("DB_NAME", "******"),
 		DBSSLMode:  getEnv("DB_SSL_MODE", "disable"),
 		AppPort:    getEnv("APP_PORT", "8080"),
+		IsTest:     false,
 	}
 }
 
@@ -32,7 +36,7 @@ func (c *Config) GetDBConnectionString() string {
 		" user=" + c.DBUser +
 		" password=" + c.DBPassword +
 		" dbname=" + c.DBName +
-		" sslmode=" + c.DBSSLMode
+		" sslmode=disable"
 }
 
 func getEnv(key, defaultValue string) string {

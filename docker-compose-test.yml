@@ -1,0 +1,44 @@
+services:
+  test-postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+      - ./internal/infrastructure/postgres_database/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test-app-network
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      DB_HOST: test-postgres
+      DB_PORT: 5432
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DB_NAME: test_db
+      DB_SSL_MODE: disable
+    depends_on:
+      test-postgres:
+        condition: service_healthy
+    working_dir: /app
+    networks:
+      - test-app-network
+
+volumes:
+  test_postgres_data:
+
+networks:
+  test-app-network:
+    driver: bridge

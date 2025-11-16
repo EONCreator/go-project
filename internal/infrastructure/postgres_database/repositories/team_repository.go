@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	"go-project/internal/domain/entities"
@@ -55,12 +56,31 @@ func (r *TeamRepository) Create(ctx context.Context, team *entities.Team) error 
 }
 
 func (r *TeamRepository) GetByName(ctx context.Context, name string) (*entities.Team, error) {
-	// Проверяем существование команды
-	teamQuery := `SELECT name FROM teams WHERE name = $1`
-	row := r.db.QueryRowContext(ctx, teamQuery, name)
+	query := `
+        SELECT 
+            t.name,
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                        'user_id', u.user_id,
+                        'username', u.username, 
+                        'is_active', u.is_active
+                    )
+                ) FILTER (WHERE u.user_id IS NOT NULL),
+                '[]'
+            ) as members
+        FROM teams t
+        LEFT JOIN team_members tm ON t.name = tm.team_name
+        LEFT JOIN users u ON tm.user_id = u.user_id
+        WHERE t.name = $1
+        GROUP BY t.name`
+
+	row := r.db.QueryRowContext(ctx, query, name)
 
 	var team entities.Team
-	err := row.Scan(&team.Name)
+	var membersJSON string
+
+	err := row.Scan(&team.Name, &membersJSON)
 	if err == sql.ErrNoRows {
 		return nil, repositories.ErrTeamNotFound
 	}
@@ -68,29 +88,10 @@ func (r *TeamRepository) GetByName(ctx context.Context, name string) (*entities.
 		return nil, fmt.Errorf("failed to get team: %w", err)
 	}
 
-	// Получаем членов команды
-	membersQuery := `
-        SELECT u.user_id, u.username, u.is_active 
-        FROM team_members tm
-        JOIN users u ON tm.user_id = u.user_id
-        WHERE tm.team_name = $1`
-
-	rows, err := r.db.QueryContext(ctx, membersQuery, name)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get team members: %w", err)
-	}
-	defer rows.Close()
-
-	var members []*entities.User
-	for rows.Next() {
-		var user entities.User
-		if err := rows.Scan(&user.UserID, &user.Username, &user.IsActive); err != nil {
-			return nil, fmt.Errorf("failed to scan team member: %w", err)
-		}
-		members = append(members, &user)
+	if err := json.Unmarshal([]byte(membersJSON), &team.Members); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal members: %w", err)
 	}
 
-	team.Members = members
 	return &team, nil
 }
 

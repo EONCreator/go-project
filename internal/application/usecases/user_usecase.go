@@ -20,7 +20,6 @@ func NewUserUseCase(userRepo repositories.UserRepository, teamRepo repositories.
 }
 
 func (uc *UserUseCase) SetUserActive(ctx context.Context, userID string, isActive bool) (*entities.User, string, error) {
-	// Проверяем существование пользователя
 	user, err := uc.userRepo.GetByID(ctx, userID)
 	if err != nil {
 		return nil, "", err
@@ -36,11 +35,13 @@ func (uc *UserUseCase) SetUserActive(ctx context.Context, userID string, isActiv
 		return nil, "", err
 	}
 
-	// Получаем команду пользователя
-	var teamName string
-	if team, err := uc.teamRepo.GetByUserID(ctx, userID); err == nil && team != nil {
-		teamName = team.Name
+	team, err := uc.teamRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		if err == repositories.ErrTeamNotFound {
+			return user, "", nil
+		}
+		return nil, "", err
 	}
 
-	return user, teamName, nil
+	return user, team.Name, nil
 }

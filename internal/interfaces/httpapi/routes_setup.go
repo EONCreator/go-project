@@ -4,15 +4,13 @@ import (
 	"net/http"
 
 	"go-project/internal/application/usecases"
-	"go-project/internal/interfaces/httpapi/handlers/pullRequests"
+	"go-project/internal/interfaces/httpapi/handlers/pullrequests"
 	"go-project/internal/interfaces/httpapi/handlers/teams"
 	"go-project/internal/interfaces/httpapi/handlers/users"
-
-	_ "go-project/docs"
 )
 
 type Server struct {
-	prHandler   *pullRequests.PullRequestHandler
+	prHandler   *pullrequests.PullRequestHandler
 	teamHandler *teams.TeamHandler
 	userHandler *users.UserHandler
 	mux         *http.ServeMux
@@ -23,7 +21,7 @@ func NewServer(
 	teamUseCase *usecases.TeamUseCase,
 	userUseCase *usecases.UserUseCase,
 ) *Server {
-	prHandler := pullRequests.NewPullRequestHandler(prUseCase)
+	prHandler := pullrequests.NewPullRequestHandler(prUseCase)
 	teamHandler := teams.NewTeamHandler(teamUseCase)
 	userHandler := users.NewUserHandler(userUseCase, prUseCase)
 	s := &Server{
