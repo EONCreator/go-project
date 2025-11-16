@@ -8,9 +8,10 @@
 
 Данное решение реализует **Clean architecture**.
 
-<img width="800" height="576" alt="image" src="https://github.com/user-attachments/assets/45e34ed1-0a30-4cf4-b2f2-debe30cbaa8d" />
+<img width="500" height="576" alt="image" src="https://github.com/user-attachments/assets/45e34ed1-0a30-4cf4-b2f2-debe30cbaa8d" />
 
 **domain** - слой, в котором определены сущности. Это, можно сказать, "ядро" приложения.<br>
 **application/usecases** - здесь находятся сервисы, которые работают с бизнес-логикой.<br>
-**infrastructure** - здесь находятся низкоуровневые сервисы. В данном случае реализации репозиториев (**postgres_batabase**).<br>
+**infrastructure** - здесь находятся низкоуровневые сервисы. В данном случае реализации репозиториев.<br>
 **interfaces** - здесь находится контроллер http-запросов (обработчики, которые привязаны к маршрутам).<br>
+
