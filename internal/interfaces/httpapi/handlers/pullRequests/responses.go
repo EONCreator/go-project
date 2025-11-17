@@ -39,6 +39,22 @@ type ReassignReviewerResponse struct {
 	ReplacedBy string              `json:"replaced_by" example:"u5"`
 }
 
+// UserPRStatsResponse - ответ со статистикой по PR пользователя
+type UserPRStatsResponse struct {
+	UserID                 string                `json:"user_id"`
+	Username               string                `json:"username"`
+	TotalAuthored          int                   `json:"total_authored"`
+	TotalAssignedForReview int                   `json:"total_assigned_for_review"`
+	AuthoredStats          PRStatusStatsResponse `json:"authored_stats"`
+	ReviewerStats          PRStatusStatsResponse `json:"reviewer_stats"`
+}
+
+// PRStatusStatsResponse - статистика по статусам PR
+type PRStatusStatsResponse struct {
+	Open   int `json:"open"`
+	Merged int `json:"merged"`
+}
+
 // Методы преобразования
 func (h *PullRequestHandler) toPullRequestResponse(pr *entities.PullRequest) PullRequestResponse {
 	var response PullRequestResponse

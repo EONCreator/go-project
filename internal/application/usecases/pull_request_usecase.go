@@ -186,6 +186,64 @@ func (uc *PullRequestUseCase) GetPRsForReview(ctx context.Context, userID string
 	return uc.prRepo.GetByReviewerID(ctx, userID)
 }
 
+// Метод 1 (дополнительное задание) - статистика
+func (uc *PullRequestUseCase) GetUserPRStats(ctx context.Context, userID string) (*entities.UserPRStats, error) {
+	// Проверяем существование пользователя
+	user, err := uc.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		return nil, errors.NewDomainError(errors.ErrNotFound, err.Error())
+	}
+
+	if user == nil {
+		return nil, errors.NewDomainError(errors.ErrNotFound, "user not found")
+	}
+
+	// Получаем все PR где пользователь был автором
+	authoredPRs, err := uc.prRepo.GetByAuthorID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Получаем все PR где пользователь был ревьювером
+	reviewerPRs, err := uc.prRepo.GetByReviewerID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Считаем статистику по статусам для authored PRs
+	var authoredStats entities.PRStatusStats
+	for _, pr := range authoredPRs {
+		switch pr.Status {
+		case entities.StatusOpen:
+			authoredStats.Open++
+		case entities.StatusMerged:
+			authoredStats.Merged++
+		}
+	}
+
+	// Считаем статистику по статусам для reviewer PRs
+	var reviewerStats entities.PRStatusStats
+	for _, pr := range reviewerPRs {
+		switch pr.Status {
+		case entities.StatusOpen:
+			reviewerStats.Open++
+		case entities.StatusMerged:
+			reviewerStats.Merged++
+		}
+	}
+
+	stats := &entities.UserPRStats{
+		UserID:                 userID,
+		Username:               user.Username,
+		TotalAuthored:          len(authoredPRs),
+		TotalAssignedForReview: len(reviewerPRs),
+		AuthoredStats:          authoredStats,
+		ReviewerStats:          reviewerStats,
+	}
+
+	return stats, nil
+}
+
 func nowPtr() *time.Time {
 	t := time.Now()
 	return &t

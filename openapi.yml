@@ -391,6 +391,83 @@ paths:
                   value:
                     error: { code: NO_CANDIDATE, message: no active replacement candidate in team }
 
+  /pullRequest/userStats:
+    get:
+      summary: Get user PR statistics
+      description: Returns statistics about pull requests for a specific user - number of authored PRs and assigned for review
+      tags:
+        - PullRequests
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: ID of the user to get statistics for
+          schema:
+            type: string
+            example: "author1"
+      responses:
+        '200':
+          description: User PR statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    description: User ID
+                    example: "author1"
+                  username:
+                    type: string
+                    description: Username
+                    example: "author1"
+                  total_authored:
+                    type: integer
+                    description: Total number of PRs authored by the user
+                    example: 5
+                  total_assigned_for_review:
+                    type: integer
+                    description: Total number of PRs assigned to the user for review
+                    example: 3
+                  authored_stats:
+                    type: object
+                    description: Statistics for authored PRs by status
+                    properties:
+                      open:
+                        type: integer
+                        example: 2
+                      merged:
+                        type: integer
+                        example: 3
+                      closed:
+                        type: integer
+                        example: 0
+                  reviewer_stats:
+                    type: object
+                    description: Statistics for PRs assigned for review by status
+                    properties:
+                      open:
+                        type: integer
+                        example: 1
+                      merged:
+                        type: integer
+                        example: 2
+                      closed:
+                        type: integer
+                        example: 0
+        '400':
+          description: Bad request - missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /users/getReview:
     get:
       tags: [Users]

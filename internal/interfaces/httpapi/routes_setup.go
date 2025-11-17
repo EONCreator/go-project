@@ -45,6 +45,7 @@ func (s *Server) setupRoutes() {
 	s.mux.HandleFunc("POST /pullRequest/create", s.prHandler.PostPullRequestCreate)
 	s.mux.HandleFunc("POST /pullRequest/merge", s.prHandler.PostPullRequestMerge)
 	s.mux.HandleFunc("POST /pullRequest/reassign", s.prHandler.PostPullRequestReassign)
+	s.mux.HandleFunc("GET /pullRequest/userStats", s.prHandler.GetUserPRStats)
 
 	// Команды - делегируем хендлерам
 	s.mux.HandleFunc("POST /team/add", s.teamHandler.PostTeamAdd)

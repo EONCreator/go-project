@@ -25,3 +25,21 @@ type PullRequestShort struct {
 	AuthorID string            `json:"author_id"`
 	Status   PullRequestStatus `json:"status"`
 }
+
+// Для статистики
+
+// PRStatusStats содержит статистику по статусам PR
+type PRStatusStats struct {
+	Open   int `json:"open"`
+	Merged int `json:"merged"`
+}
+
+// UserPRStats содержит статистику по PR для пользователя
+type UserPRStats struct {
+	UserID                 string        `json:"user_id"`
+	Username               string        `json:"username"`
+	TotalAuthored          int           `json:"total_authored"`
+	TotalAssignedForReview int           `json:"total_assigned_for_review"`
+	AuthoredStats          PRStatusStats `json:"authored_stats"`
+	ReviewerStats          PRStatusStats `json:"reviewer_stats"`
+}

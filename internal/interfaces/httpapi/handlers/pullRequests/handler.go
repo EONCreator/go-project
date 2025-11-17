@@ -70,3 +70,35 @@ func (h *PullRequestHandler) PostPullRequestReassign(w http.ResponseWriter, r *h
 
 	common.WriteJSON(w, http.StatusOK, response)
 }
+
+// Возвращает статистику по PR для пользователя
+func (h *PullRequestHandler) GetUserPRStats(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("userId")
+	if userID == "" {
+		common.WriteError(w, http.StatusBadRequest, "MISSING_PARAMETER", "userId parameter is required")
+		return
+	}
+
+	stats, err := h.prUseCase.GetUserPRStats(r.Context(), userID)
+	if err != nil {
+		common.HandleDomainError(w, err)
+		return
+	}
+
+	response := UserPRStatsResponse{
+		UserID:                 stats.UserID,
+		Username:               stats.Username,
+		TotalAuthored:          stats.TotalAuthored,
+		TotalAssignedForReview: stats.TotalAssignedForReview,
+		AuthoredStats: PRStatusStatsResponse{
+			Open:   stats.AuthoredStats.Open,
+			Merged: stats.AuthoredStats.Merged,
+		},
+		ReviewerStats: PRStatusStatsResponse{
+			Open:   stats.ReviewerStats.Open,
+			Merged: stats.ReviewerStats.Merged,
+		},
+	}
+
+	common.WriteJSON(w, http.StatusOK, response)
+}
