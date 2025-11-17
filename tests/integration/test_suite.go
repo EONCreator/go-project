@@ -2,10 +2,8 @@ package integration
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
-	"time"
 
 	"go-project/config"
 	"go-project/internal/application/usecases"
@@ -51,28 +49,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.initializeRepositories()
 	s.initializeUseCases()
-}
-
-func (s *IntegrationTestSuite) waitForDBConnection(cfg *config.Config) {
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
-
-	for i := 0; i < 10; i++ {
-		db, err := sql.Open("postgres", connStr)
-		if err != nil {
-			time.Sleep(1 * time.Second)
-			continue
-		}
-
-		if err := db.Ping(); err == nil {
-			db.Close()
-			log.Println("Database is ready!")
-			return
-		}
-		db.Close()
-		time.Sleep(1 * time.Second)
-	}
-	log.Fatal("Database connection failed after 10 seconds")
 }
 
 func (s *IntegrationTestSuite) createTestConfig() *config.Config {
