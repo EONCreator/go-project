@@ -16,14 +16,7 @@ logs:
 
 # Запуск тестов
 test:
-	docker-compose -f docker-compose.test.yml up test --abort-on-container-exit
-
-# Интеграционные тесты
-test-integration:
-	docker-compose -f docker-compose.test.yml up integration-tests --abort-on-container-exit
-
-# Полный перезапуск
-fresh-start: down up
+	docker-compose -f docker-compose.test.yml up
 
 # Просмотр Swagger документации
 swagger:
