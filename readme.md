@@ -1,4 +1,4 @@
-**Описание еще не полностью отредактировано!** Собираю материалы для readme.
+<h3>Инструкция по запуску</h3>
 
 Для запуска нужно перейти в корень проекта и запустить команду **docker compose up -d** (Либо запустить с Visual Studio Code)<br>
 Для тестирования API нужно перейти по ссылке: http://localhost:8080/swagger<br>
@@ -103,3 +103,4 @@ _Все тесты проходят успешно:_ <br>
     --- PASS: TestUserUseCaseIntegration/TestSetUserActive_Success (0.15s)
     --- PASS: TestUserUseCaseIntegration/TestSetUserActive_UserNotFound (0.13s)
 ```
+
