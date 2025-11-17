@@ -135,10 +135,10 @@ paths:
             example:
               team_name: payments
               members:
-                - user_id: u1
+                - user_id: u20
                   username: Alice
                   is_active: true
-                - user_id: u2
+                - user_id: u21
                   username: Bob
                   is_active: true
       responses:
@@ -155,10 +155,10 @@ paths:
                 team:
                   team_name: backend
                   members:
-                    - user_id: u1
+                    - user_id: u20
                       username: Alice
                       is_active: true
-                    - user_id: u2
+                    - user_id: u21
                       username: Bob
                       is_active: true
         '400':
