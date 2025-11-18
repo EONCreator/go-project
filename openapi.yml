@@ -404,7 +404,7 @@ paths:
           description: ID of the user to get statistics for
           schema:
             type: string
-            example: "author1"
+            example: "u1"
       responses:
         '200':
           description: User PR statistics retrieved successfully
