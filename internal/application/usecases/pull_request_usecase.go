@@ -44,29 +44,21 @@ func (uc *PullRequestUseCase) CreatePR(ctx context.Context, authorID, prID, prNa
 		return nil, errors.NewDomainError(errors.ErrNotFound, "resource not found")
 	}
 
-	// Проверяем что автор существует в команде
-	authorExists := false
+	// Собираем активных ревьюверов (исключая автора)
 	var reviewers []string
-
 	for _, member := range team.Members {
-		// Проверяем существование автора
+		// Пропускаем автора
 		if member.UserID == authorID {
-			authorExists = true
-			continue // пропускаем автора
+			continue
 		}
 
 		// Собираем активных ревьюверов
 		if member.IsActive {
 			reviewers = append(reviewers, member.UserID)
 			if len(reviewers) >= 2 {
-				break
+				break // набрали достаточно ревьюверов
 			}
 		}
-	}
-
-	// Проверяем что автор найден в команде
-	if !authorExists {
-		return nil, errors.NewDomainError(errors.ErrNotFound, "author not found in team")
 	}
 
 	pr := &entities.PullRequest{
